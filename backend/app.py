@@ -1,68 +1,96 @@
-from flask import Flask, request, jsonify
-from document_loader import load_document
+import os
+
+from flask import Flask, jsonify, render_template, request
+
 from chunking import chunk_text
-from embeddings import create_embeddings, model
-from vector_store import create_index, search_index
+from document_loader import load_document
+from rag_pipeline import answer_question
 
 app = Flask(__name__)
 
-stored_chunks = []
-faiss_index = None
+document_state = {
+    "filename": None,
+    "text": "",
+    "chunks": [],
+}
 
 
-@app.route("/")
+@app.get("/")
 def home():
-    return "Document QA Backend Running"
+    return render_template("index.html")
 
 
-# -------- Upload ----------
-@app.route("/upload", methods=["POST"])
+@app.get("/api/health")
+def health():
+    return jsonify(
+        {
+            "status": "ok",
+            "document_loaded": bool(document_state["chunks"]),
+            "chunk_count": len(document_state["chunks"]),
+            "answer_mode": "ollama-or-local-grounded-generative",
+            "ollama_model": os.getenv("OLLAMA_MODEL", "llama3.2"),
+            "ollama_url": os.getenv("OLLAMA_URL", "http://127.0.0.1:11434"),
+        }
+    )
+
+
+@app.post("/api/upload")
 def upload():
-    global stored_chunks, faiss_index
-
     try:
         if "file" not in request.files:
-            return jsonify({"error": "No file uploaded"}), 400
+            return jsonify({"error": "Please choose a PDF file to upload."}), 400
 
         file = request.files["file"]
 
+        if not file or not file.filename:
+            return jsonify({"error": "Please choose a PDF file to upload."}), 400
+
+        if not file.filename.lower().endswith(".pdf"):
+            return jsonify({"error": "Only PDF files are supported."}), 400
+
         text = load_document(file)
-        stored_chunks = chunk_text(text)
 
-        embeddings = create_embeddings(stored_chunks)
-        faiss_index = create_index(embeddings)
+        if not text.strip():
+            return jsonify({"error": "The PDF does not contain readable text."}), 400
 
-        return jsonify({
-            "message": "Document indexed successfully",
-            "chunks": len(stored_chunks)
-        })
+        chunks = chunk_text(text)
+        if not chunks:
+            return jsonify({"error": "The document could not be split into chunks."}), 400
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        document_state["filename"] = file.filename
+        document_state["text"] = text
+        document_state["chunks"] = chunks
+
+        return jsonify(
+            {
+                "message": "Document processed successfully.",
+                "filename": file.filename,
+                "total_characters": len(text),
+                "total_chunks": len(chunks),
+                "preview": text[:320],
+            }
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Upload failed: {exc}"}), 500
 
 
-# -------- Ask ----------
-@app.route("/ask", methods=["POST"])
+@app.post("/api/ask")
 def ask():
-    global stored_chunks, faiss_index
-
     try:
-        if faiss_index is None:
-            return jsonify({"error": "Upload document first"}), 400
+        if not document_state["chunks"]:
+            return jsonify({"error": "Upload a PDF before asking a question."}), 400
 
-        data = request.get_json()
-        question = data["question"]
+        data = request.get_json(silent=True) or {}
+        question = (data.get("question") or "").strip()
 
-        query_embedding = model.encode(question)
+        if not question:
+            return jsonify({"error": "Please enter a question."}), 400
 
-        indices = search_index(faiss_index, query_embedding)
-
-        relevant_chunks = [stored_chunks[i] for i in indices]
-
-        return jsonify({"answer": " ".join(relevant_chunks)})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        result = answer_question(document_state["chunks"], question)
+        result["document"] = document_state["filename"]
+        return jsonify(result)
+    except Exception as exc:
+        return jsonify({"error": f"Question processing failed: {exc}"}), 500
 
 
 if __name__ == "__main__":
