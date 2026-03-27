@@ -1,0 +1,40 @@
+Contact                            Manav Bhatt
+
+8097798195 (Home)                  AI/ML Engineer | GAN-based Anomaly Detection | NLP &
+bhattmanav20@gmail.com             Explainable AI | IIT Madras AI Hackathon Finalist | Python | Scikit-
+                                   learn | TensorFlow
+www.linkedin.com/in/               Jaipur, Rajasthan, India
+manavbhatt6656 (LinkedIn)
+                                   Summary
+Top Skills
+                                   I'm a Computer Science undergraduate at Manipal University Jaipur
+Matplotlib                         (GPA: 8.68/10) with a strong focus on Artificial Intelligence, Machine
+NumPy                              Learning, and system-level problem solving.My work lies at the
+Explainable AI                     intersection of:· AI for Cybersecurity · NLP &amp; Explainable
+                                   AI · Sparse &amp; Interpretable Neural ArchitecturesI have built
+Certifications                     production-style ML systems including: Sentinel-AI ­ A GAN-
+                                   based hybrid intrusion prevention system trained on 125K+ NSL-
+Design and analysis of Algorithm   KDD samples with a 5-model ensemble achieving 92% accuracy
+Database Programming with SQL      and 98% precision. TruthLens ­ AI-powered fake news detection
+Object Oriented Programming Using  system using TF-IDF + Logistic Regression with generative AI-
+Java                               based explanation summaries. BDH Memory Visualization ­ A brain-
+Data Structures and Algorithms     inspired sparse neural memory model focused on interpretability
+Using Java                         and Hebbian learning dynamics. Finalist ­ Synaptix Frontier AI
+Database Design                    Hackathon (Shaastra 2026, IIT Madras) Campus Round Qualifier
+                                   ­ HackWise at IRIS 2026 (IIM Indore)I am actively seeking AI/ML
+                                   internship and research engineering opportunities where I can
+                                   contribute to scalable, interpretable, and impactful AI systems.
+
+                                   Education
+
+                                   Manipal University Jaipur
+
+                                   Bachelor of Technology - BTech, Computer Science · (August
+                                   2023 - December 2027)
+
+                                   Lakshya Prep High School and Jr college.
+
+                                   Intermediate, PCM
+
+                                   Page 1 of 1
+

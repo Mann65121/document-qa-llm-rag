@@ -1,19 +1,17 @@
-import faiss
-import numpy as np
-
-def create_index(embeddings):
-    dimension = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings)
-    return index
+from rag_pipeline import score_chunk
 
 
-def search_index(index, query_embedding, top_k=2):
+def create_index(chunks):
+    return list(chunks)
 
-    if len(query_embedding.shape) == 1:
-        query_embedding = np.expand_dims(query_embedding, axis=0)
 
-    query_embedding = query_embedding.astype("float32")
+def search_index(index, query, top_k=3):
+    ranked = []
 
-    distances, indices = index.search(query_embedding, top_k)
-    return indices[0]
+    for position, chunk in enumerate(index):
+        score = score_chunk(chunk, query)
+        if score > 0:
+            ranked.append((score, position))
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    return [position for _, position in ranked[:top_k]]

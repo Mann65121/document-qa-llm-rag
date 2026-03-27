@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas RAG Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Document intelligence workspace</p>
+                <h1>Atlas RAG Studio</h1>
+                <p class="hero-text">
+                    Upload a PDF, explore the extracted knowledge, and ask grounded questions through a focused,
+                    modern interface built for clarity.
+                </p>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <section class="panel upload-panel">
+                <div class="panel-header">
+                    <p class="panel-kicker">Step 1</p>
+                    <h2>Load your PDF</h2>
+                </div>
+
+                <form id="upload-form" class="upload-form">
+                    <label class="dropzone" for="file-input">
+                        <input id="file-input" name="file" type="file" accept=".pdf" />
+                        <span class="dropzone-title">Choose a PDF</span>
+                        <span class="dropzone-subtitle">Readable text PDFs work best for search and answers.</span>
+                    </label>
+                    <button type="submit" class="primary-button">Process document</button>
+                </form>
+
+                <div class="stats-grid" id="stats-grid">
+                    <article class="stat-card">
+                        <span>File</span>
+                        <strong id="stat-file">No document yet</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Characters</span>
+                        <strong id="stat-characters">0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Chunks</span>
+                        <strong id="stat-chunks">0</strong>
+                    </article>
+                </div>
+
+                <div class="preview-box">
+                    <p class="preview-label">Preview</p>
+                    <p id="document-preview">Your document preview will appear here after upload.</p>
+                </div>
+            </section>
+
+            <section class="panel qa-panel">
+                <div class="panel-header">
+                    <p class="panel-kicker">Step 2</p>
+                    <h2>Ask grounded questions</h2>
+                </div>
+
+                <form id="question-form" class="question-form">
+                    <textarea
+                        id="question-input"
+                        rows="4"
+                        placeholder="Example: Summarize the main goals and responsibilities described in the document."
+                    ></textarea>
+                    <div class="prompt-chips">
+                        <button type="button" class="chip" data-question="Summarize the document in 5 concise points.">5-point summary</button>
+                        <button type="button" class="chip" data-question="What are the key objectives mentioned in the document?">Key objectives</button>
+                        <button type="button" class="chip" data-question="List the important responsibilities or requirements from the document.">Responsibilities</button>
+                    </div>
+                    <button type="submit" class="primary-button">Generate answer</button>
+                </form>
+
+                <div class="answer-box">
+                    <div class="answer-heading">
+                        <span>Answer</span>
+                        <span id="answer-document"></span>
+                    </div>
+                    <div class="answer-meta">
+                        <span id="answer-confidence" class="confidence-pill">Confidence: waiting</span>
+                    </div>
+                    <p id="answer-text">Answers will appear here once a document is loaded.</p>
+                </div>
+            </section>
+        </main>
+
+        <div id="toast" class="toast" hidden></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
