@@ -13,5 +13,18 @@ document_state = {
     "text": "",
     "chunks": [],
 }
+@app.get("/api/health")
+def health():
+    return jsonify(
+        {
+            "status": "ok",
+            "document_loaded": bool(document_state["chunks"]),
+            "chunk_count": len(document_state["chunks"]),
+            "answer_mode": "ollama-or-local-grounded-generative",
+            "ollama_model": os.getenv("OLLAMA_MODEL", "llama3.2"),
+            "ollama_url": os.getenv("OLLAMA_URL", "http://127.0.0.1:11434"),
+        }
+    )
+
 
 
