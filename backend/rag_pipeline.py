@@ -4,8 +4,6 @@ import os
 import re
 from collections import Counter
 from urllib import error, request
-
-
 STOP_WORDS = {
     "a",
     "about",
