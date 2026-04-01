@@ -13,6 +13,13 @@ document_state = {
     "text": "",
     "chunks": [],
 }
+
+
+@app.get("/")
+def home():
+    return render_template("index.html")
+
+
 @app.get("/api/health")
 def health():
     return jsonify(
@@ -25,6 +32,8 @@ def health():
             "ollama_url": os.getenv("OLLAMA_URL", "http://127.0.0.1:11434"),
         }
     )
+
+
 @app.post("/api/upload")
 def upload():
     try:
@@ -65,4 +74,24 @@ def upload():
         return jsonify({"error": f"Upload failed: {exc}"}), 500
 
 
+@app.post("/api/ask")
+def ask():
+    try:
+        if not document_state["chunks"]:
+            return jsonify({"error": "Upload a PDF before asking a question."}), 400
 
+        data = request.get_json(silent=True) or {}
+        question = (data.get("question") or "").strip()
+
+        if not question:
+            return jsonify({"error": "Please enter a question."}), 400
+
+        result = answer_question(document_state["chunks"], question)
+        result["document"] = document_state["filename"]
+        return jsonify(result)
+    except Exception as exc:
+        return jsonify({"error": f"Question processing failed: {exc}"}), 500
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
