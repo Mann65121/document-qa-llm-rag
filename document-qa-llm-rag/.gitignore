@@ -1,0 +1,26 @@
+# Python virtual environments
+venv/
+.venv/
+env/
+
+# Python cache and tooling
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Local environment files
+.env
+
+# Model or cache artifacts
+.cache/
+*.bin
+*.pt
+
+# Editor settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

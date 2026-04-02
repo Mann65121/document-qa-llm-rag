@@ -1,0 +1,51 @@
+             Manav Bhatt
+
+bhattmanav20@gmail.com -- 8097798195 -- Mumbai
+   LinkedIn: manavbhatt6656 GitHub: Mann65121
+
+Profile Summary
+
+Computer Science undergraduate with strong foundation in Data Structures, Machine Learning, and Sys-
+tems Design. Experienced in building AI-driven applications in cybersecurity, NLP, and interpretability.
+Interested in AI/ML and research-oriented engineering roles.
+
+Education                                                                  Aug 2023 ­ May 2027
+                                                                                     GPA: 8.68/10
+B.Tech in Computer Science Engineering
+Manipal University, Jaipur
+
+Projects                                                                   GitHub
+                                                                           GitHub
+Sentinel-AI: Hybrid Intrusion Prevention System                            GitHub
+· Built GAN-based anomaly detection on NSL-KDD dataset (125K+ samples).
+· Developed 5-model ensemble achieving 92% accuracy and 98% precision.
+· Designed automated pipeline for real-time malicious traffic mitigation.
+· Tech Stack: Python, Scikit-learn, TensorFlow
+
+    TruthLens ­ AI Fake News Detection System
+· Built NLP classifier using TF-IDF + Logistic Regression.
+· Integrated Generative AI for explainable prediction summaries.
+· Deployed full-stack application with React + Tailwind CSS.
+· Tech Stack: Python, HuggingFace, React
+
+    BDH Memory Visualization ­ AI Interpretability
+· Modeled sparse, brain-inspired memory using graph-based neurons.
+· Visualized synaptic dynamics and Hebbian learning patterns.
+· Tech Stack: Python, NetworkX, NumPy
+
+Achievements
+
+· Finalist ­ Synaptix Frontier AI Hackathon, Shaastra 2026 (IIT Madras)
+   Presented BDH (Dragon Hatchling), a post-transformer architecture focused on sparse activations and
+   interpretability.
+
+· Campus Round Qualifier ­ HackWise at IRIS 2026, IIM Indore Selected among competitive
+   teams for national-level hackathon round.
+
+Technical Skills
+
+Languages: Python, Java, C, JavaScript
+Machine Learning: Scikit-learn, GANs, Ensemble Learning, NLP
+Tools: Git, GitHub, Linux, VS Code
+Databases: SQL
+
