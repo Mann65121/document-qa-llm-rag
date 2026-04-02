@@ -2,8 +2,11 @@ import json
 import math
 import os
 import re
+import unicodedata
 from collections import Counter
 from urllib import error, request
+
+
 STOP_WORDS = {
     "a",
     "about",
@@ -53,6 +56,25 @@ DEFAULT_OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434/api/generate")
 
 
+def sanitize_output_text(text):
+    text = unicodedata.normalize("NFKD", text)
+    text = text.replace("\uFFFD", " ")
+    text = text.replace("\u2013", "-")
+    text = text.replace("\u2014", "-")
+    text = text.replace("\u2018", "'")
+    text = text.replace("\u2019", "'")
+    text = text.replace("\u201c", '"')
+    text = text.replace("\u201d", '"')
+    text = re.sub(r"[^\x09\x0A\x0D\x20-\x7E]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def remove_source_suffix(text):
+    text = re.sub(r"\s*Sources:\s*Chunk\s+\d+(?:\s*,\s*Chunk\s+\d+)*\s*$", "", text, flags=re.IGNORECASE)
+    return text.strip()
+
+
 def tokenize(text):
     words = re.findall(r"[A-Za-z0-9']+", text.lower())
     return [word for word in words if word not in STOP_WORDS]
@@ -60,8 +82,8 @@ def tokenize(text):
 
 def split_sentences(text):
     raw_sentences = re.split(r"(?<=[.!?])\s+", text)
-    sentences = [sentence.strip() for sentence in raw_sentences if sentence.strip()]
-    return sentences or [text.strip()]
+    sentences = [sanitize_output_text(sentence) for sentence in raw_sentences if sentence.strip()]
+    return sentences or [sanitize_output_text(text.strip())]
 
 
 def build_document_frequency(chunks):
@@ -111,9 +133,10 @@ def retrieve_chunks(chunks, query, top_k=4):
     scored = []
 
     for index, chunk in enumerate(chunks):
-        score = score_text(chunk, query, doc_frequencies, total_docs)
+        clean_chunk = sanitize_output_text(chunk)
+        score = score_text(clean_chunk, query, doc_frequencies, total_docs)
         if score > 0:
-            scored.append({"id": index + 1, "text": chunk, "score": round(score, 3)})
+            scored.append({"id": index + 1, "text": clean_chunk, "score": round(score, 3)})
 
     scored.sort(key=lambda item: item["score"], reverse=True)
     return scored[:top_k]
@@ -180,19 +203,19 @@ def build_precise_answer(query, evidence_sentences):
     if question_word in {"what", "who", "when", "where"}:
         primary = filtered[0]
         if len(filtered) > 1 and len(primary) < 180:
-            return f"{primary} {filtered[1]}"
-        return primary
+            return sanitize_output_text(f"{primary} {filtered[1]}")
+        return sanitize_output_text(primary)
 
     if question_word == "why":
-        return " ".join(filtered[:2])
+        return sanitize_output_text(" ".join(filtered[:2]))
 
     if question_word == "how":
-        return f"{filtered[0]} {' '.join(filtered[1:2])}".strip()
+        return sanitize_output_text(f"{filtered[0]} {' '.join(filtered[1:2])}".strip())
 
     summary = " ".join(filtered[:2])
     if len(summary) > 360:
         summary = summary[:357].rsplit(" ", 1)[0] + "..."
-    return summary
+    return sanitize_output_text(summary)
 
 
 def build_generation_metadata(mode, evidence_sentences):
@@ -250,7 +273,8 @@ def generate_with_ollama(query, retrieved_chunks):
     with request.urlopen(http_request, timeout=25) as response:
         data = json.loads(response.read().decode("utf-8"))
 
-    answer = (data.get("response") or "").strip()
+    answer = sanitize_output_text((data.get("response") or "").strip())
+    answer = remove_source_suffix(answer)
     if not answer:
         raise ValueError("Empty response from Ollama")
     return answer
@@ -304,7 +328,7 @@ def answer_question(chunks, query):
         confidence = "low"
 
     return {
-        "answer": generated["answer"],
+        "answer": remove_source_suffix(sanitize_output_text(generated["answer"])),
         "sources": sources,
         "generation": generated["generation"],
         "confidence": confidence,
